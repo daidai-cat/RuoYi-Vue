@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StudyFlashcardItemMapper">
+
+    <resultMap type="StudyFlashcardItem" id="StudyFlashcardItemResult">
+        <result property="itemId" column="item_id" />
+        <result property="bookId" column="book_id" />
+        <result property="userId" column="user_id" />
+        <result property="frontContent" column="front_content" />
+        <result property="backContent" column="back_content" />
+        <result property="quadrantType" column="quadrant_type" />
+        <result property="reviewCount" column="review_count" />
+        <result property="difficultyScore" column="difficulty_score" />
+        <result property="lastUserAnswer" column="last_user_answer" />
+        <result property="status" column="status" />
+        <result property="remark" column="remark" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="selectStudyFlashcardItemVo">
+        select item_id, book_id, user_id, front_content, back_content, quadrant_type, review_count, difficulty_score,
+               last_user_answer, status, remark, create_by, create_time, update_by, update_time
+        from study_flashcard_item
+    </sql>
+
+    <select id="selectStudyFlashcardItemList" parameterType="StudyFlashcardItem" resultMap="StudyFlashcardItemResult">
+        <include refid="selectStudyFlashcardItemVo"/>
+        <where>
+            <if test="itemId != null">
+                and item_id = #{itemId}
+            </if>
+            <if test="bookId != null">
+                and book_id = #{bookId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="quadrantType != null">
+                and quadrant_type = #{quadrantType}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="frontContent != null and frontContent != ''">
+                and front_content like concat('%', #{frontContent}, '%')
+            </if>
+        </where>
+        order by item_id desc
+    </select>
+
+    <select id="selectStudyFlashcardItemById" parameterType="Long" resultMap="StudyFlashcardItemResult">
+        <include refid="selectStudyFlashcardItemVo"/>
+        where item_id = #{itemId}
+    </select>
+
+    <select id="selectStudyFlashcardItemByIdAndUserId" parameterType="StudyFlashcardItem" resultMap="StudyFlashcardItemResult">
+        <include refid="selectStudyFlashcardItemVo"/>
+        where item_id = #{itemId}
+          and user_id = #{userId}
+    </select>
+
+    <insert id="insertStudyFlashcardItem" parameterType="StudyFlashcardItem" useGeneratedKeys="true" keyProperty="itemId">
+        insert into study_flashcard_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bookId != null">book_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="frontContent != null">front_content,</if>
+            <if test="backContent != null">back_content,</if>
+            <if test="quadrantType != null">quadrant_type,</if>
+            <if test="reviewCount != null">review_count,</if>
+            <if test="difficultyScore != null">difficulty_score,</if>
+            <if test="lastUserAnswer != null">last_user_answer,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            create_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bookId != null">#{bookId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="frontContent != null">#{frontContent},</if>
+            <if test="backContent != null">#{backContent},</if>
+            <if test="quadrantType != null">#{quadrantType},</if>
+            <if test="reviewCount != null">#{reviewCount},</if>
+            <if test="difficultyScore != null">#{difficultyScore},</if>
+            <if test="lastUserAnswer != null">#{lastUserAnswer},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate()
+        </trim>
+    </insert>
+
+    <insert id="batchInsertStudyFlashcardItem">
+        insert into study_flashcard_item
+        (book_id, user_id, front_content, back_content, quadrant_type, review_count, difficulty_score, last_user_answer,
+         status, remark, create_by, create_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.bookId}, #{item.userId}, #{item.frontContent}, #{item.backContent}, #{item.quadrantType},
+             #{item.reviewCount}, #{item.difficultyScore}, #{item.lastUserAnswer}, #{item.status}, #{item.remark},
+             #{item.createBy}, sysdate())
+        </foreach>
+    </insert>
+
+    <update id="updateStudyFlashcardItem" parameterType="StudyFlashcardItem">
+        update study_flashcard_item
+        <set>
+            <if test="bookId != null">book_id = #{bookId},</if>
+            <if test="frontContent != null">front_content = #{frontContent},</if>
+            <if test="backContent != null">back_content = #{backContent},</if>
+            <if test="quadrantType != null">quadrant_type = #{quadrantType},</if>
+            <if test="reviewCount != null">review_count = #{reviewCount},</if>
+            <if test="difficultyScore != null">difficulty_score = #{difficultyScore},</if>
+            <if test="lastUserAnswer != null">last_user_answer = #{lastUserAnswer},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where item_id = #{itemId}
+          and user_id = #{userId}
+    </update>
+
+    <update id="moveStudyFlashcardItem">
+        update study_flashcard_item
+        set quadrant_type = #{quadrantType},
+            update_by = #{updateBy},
+            update_time = sysdate()
+        where item_id = #{itemId}
+          and user_id = #{userId}
+    </update>
+
+    <update id="updateStudyFlashcardItemScore">
+        update study_flashcard_item
+        set difficulty_score = #{difficultyScore},
+            review_count = review_count + 1,
+            update_by = #{updateBy},
+            update_time = sysdate()
+        where item_id = #{itemId}
+          and user_id = #{userId}
+    </update>
+
+    <update id="updateStudyFlashcardItemAnswer">
+        update study_flashcard_item
+        set last_user_answer = #{lastUserAnswer},
+            update_by = #{updateBy},
+            update_time = sysdate()
+        where item_id = #{itemId}
+          and user_id = #{userId}
+    </update>
+
+    <delete id="deleteStudyFlashcardItemByIds">
+        delete from study_flashcard_item
+        where item_id in
+        <foreach item="itemId" collection="itemIds" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+          and user_id = #{userId}
+    </delete>
+
+    <delete id="deleteStudyFlashcardItemByBookIds">
+        delete from study_flashcard_item
+        where book_id in
+        <foreach item="bookId" collection="bookIds" open="(" separator="," close=")">
+            #{bookId}
+        </foreach>
+          and user_id = #{userId}
+    </delete>
+
+</mapper>

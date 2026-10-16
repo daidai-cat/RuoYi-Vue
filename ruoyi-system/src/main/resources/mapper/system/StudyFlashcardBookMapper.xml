@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StudyFlashcardBookMapper">
+
+    <resultMap type="StudyFlashcardBook" id="StudyFlashcardBookResult">
+        <result property="bookId" column="book_id" />
+        <result property="userId" column="user_id" />
+        <result property="bookName" column="book_name" />
+        <result property="bookDescription" column="book_description" />
+        <result property="status" column="status" />
+        <result property="remark" column="remark" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="selectStudyFlashcardBookVo">
+        select book_id, user_id, book_name, book_description, status, remark, create_by, create_time, update_by, update_time
+        from study_flashcard_book
+    </sql>
+
+    <select id="selectStudyFlashcardBookList" parameterType="StudyFlashcardBook" resultMap="StudyFlashcardBookResult">
+        <include refid="selectStudyFlashcardBookVo"/>
+        <where>
+            <if test="bookId != null">
+                and book_id = #{bookId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="bookName != null and bookName != ''">
+                and book_name like concat('%', #{bookName}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+        order by book_id desc
+    </select>
+
+    <select id="selectStudyFlashcardBookById" parameterType="Long" resultMap="StudyFlashcardBookResult">
+        <include refid="selectStudyFlashcardBookVo"/>
+        where book_id = #{bookId}
+    </select>
+
+    <select id="selectStudyFlashcardBookByIdAndUserId" parameterType="StudyFlashcardBook" resultMap="StudyFlashcardBookResult">
+        <include refid="selectStudyFlashcardBookVo"/>
+        where book_id = #{bookId}
+          and user_id = #{userId}
+    </select>
+
+    <insert id="insertStudyFlashcardBook" parameterType="StudyFlashcardBook" useGeneratedKeys="true" keyProperty="bookId">
+        insert into study_flashcard_book
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="bookName != null and bookName != ''">book_name,</if>
+            <if test="bookDescription != null">book_description,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            create_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="bookName != null and bookName != ''">#{bookName},</if>
+            <if test="bookDescription != null">#{bookDescription},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate()
+        </trim>
+    </insert>
+
+    <update id="updateStudyFlashcardBook" parameterType="StudyFlashcardBook">
+        update study_flashcard_book
+        <set>
+            <if test="bookName != null and bookName != ''">book_name = #{bookName},</if>
+            <if test="bookDescription != null">book_description = #{bookDescription},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where book_id = #{bookId}
+          and user_id = #{userId}
+    </update>
+
+    <delete id="deleteStudyFlashcardBookByIds">
+        delete from study_flashcard_book
+        where book_id in
+        <foreach item="bookId" collection="bookIds" open="(" separator="," close=")">
+            #{bookId}
+        </foreach>
+          and user_id = #{userId}
+    </delete>
+
+</mapper>
